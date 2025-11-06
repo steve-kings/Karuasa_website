@@ -146,7 +146,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # WhiteNoise for static files on Render
 if os.getenv('RENDER'):
     MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    # Use basic storage to avoid manifest/compression issues
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+    WHITENOISE_AUTOREFRESH = True
+    WHITENOISE_USE_FINDERS = True
+    WHITENOISE_MANIFEST_STRICT = False
+    WHITENOISE_ALLOW_ALL_ORIGINS = True
 
 # ==============================================================
 # EMAIL CONFIGURATION
