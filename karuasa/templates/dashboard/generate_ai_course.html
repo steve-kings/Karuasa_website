@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Generate AI Course - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 dashboard-sidebar">
+            {% include 'dashboard/sidebar.html' %}
+        </div>
+
+        <!-- Main content -->
+        <div class="col-md-9 col-lg-10 ms-sm-auto px-4 py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">🤖 Generate AI Course</h2>
+                <a href="{% url 'dashboard:my_courses' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Courses
+                </a>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card border-accent">
+                        <div class="card-header bg-accent text-white">
+                            <h5 class="mb-0"><i class="fas fa-robot me-2"></i>AI Course Generator</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-4">
+                                Enter a topic and let AI create a personalized course outline for actuarial science students.
+                            </p>
+                            
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label fw-bold">Course Topic</label>
+                                        {{ form.topic }}
+                                        <div class="form-text">What actuarial science topic would you like to learn about?</div>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">Difficulty Level</label>
+                                        {{ form.level }}
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-bold">Duration</label>
+                                        {{ form.duration }}
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                    <a href="{% url 'dashboard:my_courses' %}" class="btn btn-secondary me-md-2">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-accent">
+                                        <i class="fas fa-magic me-2"></i>Generate Course
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Example Topics -->
+                    <div class="card mt-4 border-warning">
+                        <div class="card-header bg-warning text-dark">
+                            <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Popular Actuarial Topics</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><i class="fas fa-caret-right text-accent me-2"></i>Risk Modeling and Assessment</li>
+                                        <li class="mb-2"><i class="fas fa-caret-right text-accent me-2"></i>Financial Mathematics</li>
+                                        <li class="mb-2"><i class="fas fa-caret-right text-accent me-2"></i>Insurance Principles</li>
+                                        <li class="mb-2"><i class="fas fa-caret-right text-accent me-2"></i>Loss Reserving Techniques</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li class="mb-2"><i class="fas fa-caret-right text-accent me-2"></i>Predictive Analytics</li>
+                                        <li class="mb-2"><i class="fas fa-caret-right text-accent me-2"></i>Actuarial Modeling</li>
+                                        <li class="mb-2"><i class="fas fa-caret-right text-accent me-2"></i>Data Analysis in Insurance</li>
+                                        <li class="mb-2"><i class="fas fa-caret-right text-accent me-2"></i>Risk Management Strategies</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- How it works -->
+                    <div class="card mt-4 border-info">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0"><i class="fas fa-question-circle me-2"></i>How It Works</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-4 mb-3">
+                                    <div class="bg-accent text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                        <i class="fas fa-edit"></i>
+                                    </div>
+                                    <h6>1. Enter Topic</h6>
+                                    <p class="small text-muted">Describe what you want to learn</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="bg-accent text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <h6>2. AI Generates</h6>
+                                    <p class="small text-muted">AI creates comprehensive course content</p>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="bg-accent text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" style="width: 60px; height: 60px;">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <h6>3. Start Learning</h6>
+                                    <p class="small text-muted">Access your personalized course</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard-sidebar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .dashboard-sidebar .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 12px 15px;
+        margin-bottom: 5px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .dashboard-sidebar .nav-link:hover,
+    .dashboard-sidebar .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+
+    .btn-accent {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-accent:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        color: white;
+    }
+</style>
+{% endblock %}

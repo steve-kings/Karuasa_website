@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Gallery - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-5 fw-bold mb-3">Photo Gallery</h1>
+            <p class="lead">Explore our collection of memories from events and activities</p>
+        </div>
+    </div>
+
+    <!-- Albums Grid -->
+    <div class="row">
+        {% for album in albums %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 album-card">
+                <img src="{{ album.cover_image.url }}" class="card-img-top" alt="{{ album.title }}" style="height: 250px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ album.title }}</h5>
+                    <p class="card-text text-muted">{{ album.description|truncatewords:15 }}</p>
+                    <div class="album-meta">
+                        <small class="text-muted">
+                            <i class="fas fa-images me-1"></i> {{ album.photos.count }} photos
+                        </small>
+                        <small class="text-muted ms-3">
+                            <i class="fas fa-calendar me-1"></i> {{ album.created_at|date:"M d, Y" }}
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="{% url 'gallery:album_detail' album.pk %}" class="btn btn-primary btn-sm">View Album</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card text-center">
+                <div class="card-body py-5">
+                    <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                    <h4>No Albums Available</h4>
+                    <p class="text-muted">There are no photo albums to display at the moment.</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if albums.has_other_pages %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <nav aria-label="Gallery pagination">
+                <ul class="pagination justify-content-center">
+                    {% if albums.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ albums.previous_page_number }}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in albums.paginator.page_range %}
+                    <li class="page-item {% if albums.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+
+                    {% if albums.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ albums.next_page_number }}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .album-card {
+        transition: transform 0.3s ease;
+    }
+    
+    .album-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}

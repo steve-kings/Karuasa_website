@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header {% if error %}bg-danger{% else %}bg-success{% endif %} text-white">
+                    <h4>AI Test Results for: {{ topic }}</h4>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                        <div class="alert alert-danger">
+                            <h5>Error:</h5>
+                            <p>{{ error }}</p>
+                        </div>
+                    {% else %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Generated Course:</h5>
+                                <pre><code>{{ raw_json }}</code></pre>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Preview:</h5>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6>{{ course_data.title }}</h6>
+                                        <p>{{ course_data.description }}</p>
+                                        <h6>Topics:</h6>
+                                        <ul>
+                                            {% for topic in course_data.topics %}
+                                            <li>{{ topic }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <a href="{% url 'dashboard:test_ai_generation' %}" class="btn btn-primary mt-3">Test Another</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

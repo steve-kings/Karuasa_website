@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Members - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="display-4 mb-3">Our Members</h1>
+            <p class="lead text-muted">Meet the talented members of KARUASA</p>
+            <p class="text-muted">Total Members: <strong>{{ total_members }}</strong></p>
+        </div>
+    </div>
+
+    {% if members %}
+    <div class="row">
+        {% for member in members %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    {% if member.profile_picture %}
+                    <img src="{{ member.profile_picture.url }}" alt="{{ member.get_full_name }}"
+                        class="rounded-circle mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                    {% else %}
+                    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-3"
+                        style="width: 100px; height: 100px; font-size: 2rem;">
+                        {{ member.first_name.0 }}{{ member.last_name.0 }}
+                    </div>
+                    {% endif %}
+
+                    <h5 class="card-title">{{ member.get_full_name }}</h5>
+
+                    {% if member.course %}
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-graduation-cap"></i> {{ member.course }}
+                    </p>
+                    {% endif %}
+
+                    {% if member.year_of_study %}
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-calendar"></i> Year {{ member.year_of_study }}
+                    </p>
+                    {% endif %}
+
+                    {% if member.registration_number %}
+                    <p class="text-muted small">
+                        Reg: {{ member.registration_number }}
+                    </p>
+                    {% endif %}
+
+                    {% if member.bio %}
+                    <p class="card-text small mt-3">{{ member.bio|truncatewords:20 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                <i class="fas fa-info-circle fa-2x mb-3"></i>
+                <h4>No Members Yet</h4>
+                <p>Be the first to join KARUASA!</p>
+                <a href="{% url 'members:register' %}" class="btn btn-primary">Register Now</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h3 class="mb-4">Join Our Community</h3>
+            <p class="mb-4">Become a member of KARUASA and unlock exclusive benefits</p>
+            <a href="{% url 'members:register' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-user-plus"></i> Register Now
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+</style>
+{% endblock %}

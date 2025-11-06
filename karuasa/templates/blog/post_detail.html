@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ post.title }} - KARUASA{% endblock %}
+
+{% block og_title %}{{ post.title }} - KARUASA{% endblock %}
+{% block og_description %}{{ post.content|striptags|truncatewords:30 }}{% endblock %}
+{% block og_image %}{% if post.featured_image %}{{ post.featured_image.url }}{% else %}{% static 'images/og-default.jpg' %}{% endif %}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block twitter_title %}{{ post.title }} - KARUASA{% endblock %}
+{% block twitter_description %}{{ post.content|striptags|truncatewords:30 }}{% endblock %}
+{% block twitter_image %}{% if post.featured_image %}{{ post.featured_image.url }}{% else %}{% static 'images/og-default.jpg' %}{% endif %}{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Blog Post -->
+            <div class="card mb-4">
+                {% if post.featured_image %}
+                <img src="{{ post.featured_image.url }}" class="card-img-top" alt="{{ post.title }}" style="max-height: 400px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    <h1 class="card-title mb-3">{{ post.title }}</h1>
+                    
+                    <div class="post-meta mb-4">
+                        <div class="d-flex flex-wrap gap-3 text-muted">
+                            <span>
+                                <i class="fas fa-user me-1"></i> 
+                                {{ post.author.get_full_name|default:post.author.username }}
+                            </span>
+                            <span><i class="fas fa-calendar me-1"></i> {{ post.created_at|date:"M d, Y" }}</span>
+                            <span><i class="fas fa-heart me-1"></i> {{ post.likes }} likes</span>
+                            <span><i class="fas fa-comment me-1"></i> {{ comments.count }} comments</span>
+                        </div>
+                    </div>
+
+                    <div class="post-content">
+                        {{ post.content|linebreaks }}
+                    </div>
+
+                    <!-- Post Actions -->
+                    <div class="post-actions mt-4 pt-4 border-top">
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-danger" onclick="likePost({{ post.pk }})">
+                                <i class="fas fa-heart me-2"></i> Like
+                            </button>
+                            
+                            <!-- Share Button with Dropdown -->
+                            <div class="dropdown">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="shareDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-share me-2"></i> Share
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="shareDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="sharePost('whatsapp', {{ post.pk }})">
+                                            <i class="fab fa-whatsapp me-2 text-success"></i> Share on WhatsApp
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="sharePost('linkedin', {{ post.pk }})">
+                                            <i class="fab fa-linkedin me-2 text-primary"></i> Share on LinkedIn
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-comments me-2"></i>Comments ({{ comments.count }})</h5>
+                </div>
+                <div class="card-body">
+                    {% if user.is_authenticated %}
+                    <form method="post" class="mb-4">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ comment_form.content }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Post Comment</button>
+                    </form>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <a href="{% url 'members:login' %}" class="alert-link">Login</a> to post a comment.
+                    </div>
+                    {% endif %}
+
+                    <!-- Comments List -->
+                    <div class="comments-list">
+                        {% for comment in comments %}
+                        <div class="comment-item mb-4 pb-4 border-bottom">
+                            <div class="d-flex align-items-start">
+                                {% if comment.author.profile_picture %}
+                                <img src="{{ comment.author.profile_picture.url }}" alt="{{ comment.author.get_full_name }}" class="rounded-circle me-3" width="50" height="50">
+                                {% else %}
+                                <div class="rounded-circle bg-accent d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                    <span class="text-white fw-bold">{{ comment.author.first_name|first }}{{ comment.author.last_name|first }}</span>
+                                </div>
+                                {% endif %}
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1">{{ comment.author.get_full_name|default:comment.author.username }}</h6>
+                                            <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
+                                        </div>
+                                    </div>
+                                    <p class="mb-0 mt-2">{{ comment.content }}</p>
+                                    
+                                    <!-- Mentions -->
+                                    {% if comment.mentions.exists %}
+                                    <div class="mentions mt-2">
+                                        <small class="text-muted">
+                                            Mentioned: 
+                                            {% for mention in comment.mentions.all %}
+                                            @{{ mention.username }}{% if not forloop.last %}, {% endif %}
+                                            {% endfor %}
+                                        </small>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted text-center py-3">No comments yet. Be the first to comment!</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Author Info -->
+            <div class="card mb-4">
+                <div class="card-header bg-accent text-white">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>About the Author</h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if post.author.profile_picture %}
+                    <img src="{{ post.author.profile_picture.url }}" alt="{{ post.author.get_full_name }}" class="rounded-circle mb-3" width="100" height="100">
+                    {% else %}
+                    <div class="rounded-circle bg-accent d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 100px; height: 100px;">
+                        <span class="text-white fw-bold fs-3">{{ post.author.first_name|first }}{{ post.author.last_name|first }}</span>
+                    </div>
+                    {% endif %}
+                    <h5>{{ post.author.get_full_name|default:post.author.username }}</h5>
+                    <p class="text-muted small mb-2">{{ post.author.get_member_type_display }}</p>
+                    {% if post.author.course %}
+                    <p class="text-muted small">{{ post.author.course }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Post Stats -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Post Stats</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="display-6 fw-bold text-accent">{{ post.likes }}</div>
+                            <small class="text-muted">Likes</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Posts -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-newspaper me-2"></i>Recent Posts</h5>
+                </div>
+                <div class="card-body">
+                    {% comment %}
+                    <!-- You can add recent posts logic here -->
+                    <p class="text-muted small">No recent posts at the moment.</p>
+                    {% endcomment %}
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <small class="text-muted">March 15, 2024</small>
+                            <p class="mb-1 small">Actuarial Career Opportunities in 2024</p>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <small class="text-muted">March 10, 2024</small>
+                            <p class="mb-1 small">Data Science in Insurance Industry</p>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <small class="text-muted">March 5, 2024</small>
+                            <p class="mb-1 small">Student Achievements in SOA Exams</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function likePost(postId) {
+    fetch(`/blog/${postId}/like/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+
+function sharePost(platform, postId) {
+    // Get current page URL and metadata
+    const currentUrl = encodeURIComponent(window.location.href);
+    const postTitle = encodeURIComponent("{{ post.title }}");
+    const postDescription = encodeURIComponent("{{ post.content|striptags|truncatewords:30 }}");
+    
+    let shareUrl = '';
+    
+    // Create platform-specific share URLs with rich metadata
+    if (platform === 'whatsapp') {
+        shareUrl = `https://wa.me/?text=Check out this post: ${postTitle} - ${currentUrl}`;
+    } else if (platform === 'linkedin') {
+        // LinkedIn uses Open Graph meta tags, so we need to ensure they're properly set
+        // The actual sharing will use the meta tags from the page
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${currentUrl}`;
+    }
+    
+    // Open share window
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+}
+
+// Function to update meta tags for better sharing (optional but recommended)
+function updateMetaTagsForSharing() {
+    // This function ensures proper Open Graph tags for rich sharing
+    // Most platforms will automatically pick up your existing meta tags
+    console.log('Sharing post with rich preview...');
+}
+
+// Call this when the page loads to ensure meta tags are set
+document.addEventListener('DOMContentLoaded', function() {
+    updateMetaTagsForSharing();
+});
+</script>
+
+<style>
+    .post-content {
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+    
+    .post-content p {
+        margin-bottom: 1.5rem;
+    }
+</style>
+{% endblock %}

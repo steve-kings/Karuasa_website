@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Share Your Experience - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-custom">
+                <div class="card-header text-center">
+                    <h3 class="card-title mb-0"><i class="fas fa-comment-dots me-2"></i>Share Your Experience</h3>
+                    <p class="text-muted mb-0">Tell us about your journey with KARUASA</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.content.id_for_label }}" class="form-label fw-bold">Your Testimonial *</label>
+                            {{ form.content }}
+                            {% if form.content.errors %}
+                                <div class="text-danger small mt-1">{{ form.content.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">
+                                Share your experience, achievements, or how KARUASA has impacted your academic journey.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.role.id_for_label }}" class="form-label fw-bold">Your Role</label>
+                            {{ form.role }}
+                            {% if form.role.errors %}
+                                <div class="text-danger small mt-1">{{ form.role.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">
+                                e.g., Student, Alumni, Executive Member, Committee Member, etc.
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Important Note</h6>
+                            <p class="mb-0 small">
+                                Your testimonial will be reviewed by the admin team before being published on our website. 
+                                This helps us maintain quality and ensure all content aligns with our community guidelines.
+                            </p>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i> Submit Testimonial
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-0">
+                            By submitting, you agree to our 
+                            <a href="#" class="text-accent">Terms of Service</a> and 
+                            <a href="#" class="text-accent">Privacy Policy</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonials Guidelines -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Writing a Great Testimonial</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>What to Include:</h6>
+                            <ul class="small text-muted">
+                                <li>Your personal experience with KARUASA</li>
+                                <li>Specific events or activities that impacted you</li>
+                                <li>Skills or knowledge you've gained</li>
+                                <li>How KARUASA helped your career or studies</li>
+                                <li>Memorable moments or achievements</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Tips for Writing:</h6>
+                            <ul class="small text-muted">
+                                <li>Be authentic and honest</li>
+                                <li>Keep it concise but meaningful</li>
+                                <li>Focus on your personal journey</li>
+                                <li>Mention specific benefits you've received</li>
+                                <li>Share your future aspirations</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--accent-cyan);
+        box-shadow: 0 0 0 0.2rem rgba(0, 206, 209, 0.25);
+    }
+
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+    }
+</style>
+{% endblock %}

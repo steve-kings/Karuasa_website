@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ resource.title }} - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Resource Header -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-primary fs-6">{{ resource.get_resource_type_display }}</span>
+                        <small class="text-muted">{{ resource.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    
+                    <h1 class="card-title mb-3">{{ resource.title }}</h1>
+                    
+                    <div class="resource-meta mb-4">
+                        <div class="d-flex flex-wrap gap-3 text-muted">
+                            <span>
+                                <i class="fas fa-folder me-1"></i> 
+                                {{ resource.category.name }}
+                            </span>
+                            <span>
+                                <i class="fas fa-calendar me-1"></i> 
+                                Added {{ resource.created_at|timesince }} ago
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="resource-description">
+                        {{ resource.description|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resource Download/Link Section -->
+            <div class="card mb-4">
+                <div class="card-header bg-accent text-white">
+                    <h5 class="mb-0"><i class="fas fa-download me-2"></i>Access Resource</h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if resource.file %}
+                    <div class="mb-4">
+                        <i class="fas fa-file-pdf fa-4x text-danger mb-3"></i>
+                        <h4>Download Resource</h4>
+                        <p class="text-muted">Click the button below to download this resource</p>
+                        <a href="{{ resource.file.url }}" class="btn btn-primary btn-lg" download>
+                            <i class="fas fa-download me-2"></i> Download File
+                        </a>
+                        <div class="mt-2">
+                            <small class="text-muted">File size: {{ resource.file.size|filesizeformat }}</small>
+                        </div>
+                    </div>
+                    {% elif resource.external_link %}
+                    <div class="mb-4">
+                        <i class="fas fa-external-link-alt fa-4x text-primary mb-3"></i>
+                        <h4>External Resource</h4>
+                        <p class="text-muted">This resource is available at an external website</p>
+                        <a href="{{ resource.external_link }}" target="_blank" class="btn btn-primary btn-lg">
+                            <i class="fas fa-external-link-alt me-2"></i> Visit Resource
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Resource Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Resource Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Resource Type:</strong>
+                        <p class="text-muted mb-0">{{ resource.get_resource_type_display }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Category:</strong>
+                        <p class="text-muted mb-0">{{ resource.category.name }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Added On:</strong>
+                        <p class="text-muted mb-0">{{ resource.created_at|date:"F d, Y" }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Status:</strong>
+                        <p class="text-muted mb-0">
+                            {% if resource.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Resources -->
+            {% if related_resources %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-link me-2"></i>Related Resources</h5>
+                </div>
+                <div class="card-body">
+                    {% for related in related_resources %}
+                    <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                        <h6 class="mb-1">{{ related.title }}</h6>
+                        <p class="small text-muted mb-2">{{ related.description|truncatewords:10 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary small">{{ related.get_resource_type_display }}</span>
+                            <a href="{% url 'resources:resource_detail' related.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Resource Categories -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Browse Categories</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'resources:resource_list' %}?type=notes" class="badge bg-primary text-decoration-none">Study Notes</a>
+                        <a href="{% url 'resources:resource_list' %}?type=exam_prep" class="badge bg-success text-decoration-none">Exam Prep</a>
+                        <a href="{% url 'resources:resource_list' %}?type=career" class="badge bg-info text-decoration-none">Career Resources</a>
+                        <a href="{% url 'resources:resource_list' %}?type=past_paper" class="badge bg-warning text-decoration-none">Past Papers</a>
+                        <a href="{% url 'resources:resource_list' %}?type=professional" class="badge bg-secondary text-decoration-none">Professional Tips</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .resource-description {
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+    
+    .resource-description p {
+        margin-bottom: 1.5rem;
+    }
+    
+    .btn-lg {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.name }} - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 dashboard-sidebar">
+            <div class="position-sticky pt-3">
+                <div class="text-center mb-4">
+                    <div class="d-flex justify-content-center mb-3">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile" class="rounded-circle" width="80" height="80">
+                        {% else %}
+                            <div class="rounded-circle bg-accent d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <span class="text-white fw-bold fs-4">{{ user.first_name|first }}{{ user.last_name|first }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <h6 class="text-white">{{ user.get_full_name|default:user.username }}</h6>
+                    <small class="text-muted">{{ user.get_member_type_display }}</small>
+                </div>
+
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:dashboard' %}">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:my_courses' %}">
+                            <i class="fas fa-book me-2"></i> My Courses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:competitions' %}">
+                            <i class="fas fa-trophy me-2"></i> Competitions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:progress' %}">
+                            <i class="fas fa-chart-line me-2"></i> Progress
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:profile_settings' %}">
+                            <i class="fas fa-user-cog me-2"></i> Profile Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-md-9 col-lg-10 ms-sm-auto px-4 py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard:my_courses' %}">My Courses</a></li>
+                            <li class="breadcrumb-item active">{{ course.name }}</li>
+                        </ol>
+                    </nav>
+                    <h2 class="mb-0">{{ course.name }}</h2>
+                    <p class="text-muted mb-0">{{ course.course_code }}</p>
+                </div>
+                <div>
+                    {% if is_completed %}
+                    <span class="badge bg-success fs-6">Completed</span>
+                    {% else %}
+                    <a href="{% url 'dashboard:mark_course_complete' course.id %}" class="btn btn-success">
+                        Mark as Complete
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Course Content -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Course Content</h5>
+                </div>
+                <div class="card-body">
+                    {% if course.content %}
+                    <div class="course-content">
+                        {{ course.content|safe }}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                        <h4>Course Content Coming Soon</h4>
+                        <p class="text-muted">The course content is being prepared and will be available shortly.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Course Actions -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-graduation-cap fa-2x text-accent mb-3"></i>
+                            <h5>Course Completion</h5>
+                            <p class="text-muted">Mark this course as complete to track your progress and earn points.</p>
+                            {% if not is_completed %}
+                            <a href="{% url 'dashboard:mark_course_complete' course.id %}" class="btn btn-primary">
+                                Mark Course Complete
+                            </a>
+                            {% else %}
+                            <span class="badge bg-success fs-6">Completed ✓</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="fas fa-trophy fa-2x text-accent mb-3"></i>
+                            <h5>Earn Points</h5>
+                            <p class="text-muted">Complete this course to earn 100 points towards your overall progress.</p>
+                            <div class="display-6 text-accent fw-bold">100 pts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .course-content {
+        line-height: 1.8;
+    }
+    
+    .course-content h1, .course-content h2, .course-content h3 {
+        color: var(--text-dark);
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .course-content p {
+        margin-bottom: 1rem;
+    }
+    
+    .course-content ul, .course-content ol {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+</style>
+{% endblock %}

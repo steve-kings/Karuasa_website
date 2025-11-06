@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Add Project - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-custom">
+                <div class="card-header text-center">
+                    <h3 class="card-title mb-0"><i class="fas fa-plus-circle me-2"></i>Add New Project</h3>
+                    <p class="text-muted mb-0">Share your actuarial project with the community</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.title.id_for_label }}" class="form-label fw-bold">Project Title *</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                                <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">
+                                Choose a clear and descriptive title for your project.
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.description.id_for_label }}" class="form-label fw-bold">Project Description *</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">
+                                Describe your project in detail. Include the problem you're solving, methodology, and expected outcomes.
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.github_link.id_for_label }}" class="form-label fw-bold">GitHub Repository</label>
+                                    {{ form.github_link }}
+                                    {% if form.github_link.errors %}
+                                        <div class="text-danger small mt-1">{{ form.github_link.errors }}</div>
+                                    {% endif %}
+                                    <div class="form-text">
+                                        Link to your GitHub repository (optional).
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="{{ form.live_demo_link.id_for_label }}" class="form-label fw-bold">Live Demo</label>
+                                    {{ form.live_demo_link }}
+                                    {% if form.live_demo_link.errors %}
+                                        <div class="text-danger small mt-1">{{ form.live_demo_link.errors }}</div>
+                                    {% endif %}
+                                    <div class="form-text">
+                                        Link to live demo or deployment (optional).
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.featured_image.id_for_label }}" class="form-label fw-bold">Featured Image</label>
+                            {{ form.featured_image }}
+                            {% if form.featured_image.errors %}
+                                <div class="text-danger small mt-1">{{ form.featured_image.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">
+                                Upload a cover image for your project (recommended size: 1200x600px).
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-info-circle me-2"></i>Submission Guidelines</h6>
+                            <ul class="mb-0 small">
+                                <li>All projects will be reviewed by administrators before being published</li>
+                                <li>Ensure your project description is clear and comprehensive</li>
+                                <li>Include relevant links to code repositories or live demos</li>
+                                <li>Projects should be related to actuarial science, data analysis, or related fields</li>
+                                <li>You can collaborate with other members on projects</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a href="{% url 'projects:project_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i> Submit Project
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Project Tips -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Project Ideas & Tips</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Project Categories:</h6>
+                            <ul class="small text-muted">
+                                <li>Insurance risk modeling</li>
+                                <li>Financial calculators</li>
+                                <li>Data analysis tools</li>
+                                <li>Predictive modeling</li>
+                                <li>Statistical analysis</li>
+                                <li>Machine learning applications</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Best Practices:</h6>
+                            <ul class="small text-muted">
+                                <li>Include clear documentation</li>
+                                <li>Use version control (Git)</li>
+                                <li>Write clean, readable code</li>
+                                <li>Include sample data or examples</li>
+                                <li>Test your project thoroughly</li>
+                                <li>Document dependencies and setup</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--accent-cyan);
+        box-shadow: 0 0 0 0.2rem rgba(0, 206, 209, 0.25);
+    }
+
+    textarea.form-control {
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    .form-text {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}

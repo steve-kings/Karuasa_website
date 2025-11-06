@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">Welcome to KARUASA</h1>
+        <p class="lead mb-4">Empowering Future Actuaries Through Knowledge, Innovation, and Professional Excellence</p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+            {% if not user.is_authenticated %}
+                <a href="{% url 'members:register' %}" class="btn btn-primary btn-lg">Join Our Association</a>
+            {% endif %}
+            <a href="{% url 'events:event_list' %}" class="btn btn-outline-light btn-lg">Upcoming Events</a>
+        </div>
+    </div>
+</section>
+
+<!-- Slider Section -->
+<section class="py-5">
+    <div class="container">
+        <div id="mainCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+            <div class="carousel-inner">
+                {% for slider in sliders %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    {% if slider.image %}
+                    <img src="{{ slider.image.url }}" class="d-block w-100" alt="{{ slider.title }}" style="height: 500px; object-fit: cover;">
+                    {% else %}
+                    <img src="{% static 'images/default-slider.jpg' %}" class="d-block w-100" alt="{{ slider.title }}" style="height: 500px; object-fit: cover;">
+                    {% endif %}
+                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-3">
+                        <h3 class="fw-bold">{{ slider.title }}</h3>
+                        <p class="lead">{{ slider.description }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="carousel-item active">
+                    <img src="{% static 'images/default-slider.jpg' %}" class="d-block w-100" alt="KARUASA" style="height: 500px; object-fit: cover;">
+                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-50 rounded p-3">
+                        <h3 class="fw-bold">Welcome to KARUASA</h3>
+                        <p class="lead">Karatina University Actuarial Students Association</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+            <!-- Carousel Indicators -->
+            {% if sliders %}
+            <div class="carousel-indicators">
+                {% for slider in sliders %}
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="{{ forloop.counter0 }}" 
+                        class="{% if forloop.first %}active{% endif %}" aria-current="{% if forloop.first %}true{% endif %}" 
+                        aria-label="Slide {{ forloop.counter }}"></button>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- About Us Preview -->
+<section class="py-5 bg-light-custom">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="mb-4">About KARUASA</h2>
+                <p class="lead">The Karatina University Actuarial Students Association (KARUASA) is a student-led organization dedicated to fostering academic excellence and professional development among actuarial science students.</p>
+                <p>We provide a platform for knowledge sharing, networking, and skill development through various activities, workshops, and events.</p>
+                <a href="{% url 'about_us' %}" class="btn btn-primary">Learn More About Us</a>
+            </div>
+            <div class="col-md-6">
+                <img src="{% static 'images/about.jpeg' %}" alt="About KARUASA" class="img-fluid rounded shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Projects -->
+<section class="py-5 bg-light-custom">
+    <div class="container">
+        <h2 class="text-center mb-5">Featured Projects</h2>
+        <div class="row">
+            {% for project in featured_projects|slice:":2" %}
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100 project-card">
+                    {% if project.featured_image %}
+                    <img src="{{ project.featured_image.url }}" class="card-img-top" alt="{{ project.title }}" style="height: 250px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="badge bg-warning mb-2">Featured</span>
+                        <h5 class="card-title">{{ project.title }}</h5>
+                        <p class="card-text text-muted">{{ project.description|truncatewords:25 }}</p>
+                        
+                        <div class="project-meta mb-3">
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span><i class="fas fa-share me-1"></i> {{ project.shares }} shares</span>
+                                <span><i class="fas fa-calendar me-1"></i> {{ project.created_at|date:"M Y" }}</span>
+                            </div>
+                        </div>
+
+                        <div class="project-members mb-3">
+                            <small class="text-muted">By: 
+                            {% for member in project.members.all %}
+                                {{ member.get_full_name|default:member.username }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                            </small>
+                        </div>
+
+                        {% if project.github_link or project.live_demo_link %}
+                        <div class="project-links mb-3">
+                            {% if project.github_link %}
+                            <a href="{{ project.github_link }}" target="_blank" class="btn btn-sm btn-outline-dark me-1">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                            {% endif %}
+                            {% if project.live_demo_link %}
+                            <a href="{{ project.live_demo_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-external-link-alt"></i> Live Demo
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{% url 'projects:project_detail' project.pk %}" class="btn btn-primary btn-sm">View Project</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <div class="card">
+                    <div class="card-body py-5">
+                        <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
+                        <h4>No Featured Projects</h4>
+                        <p class="text-muted">Featured projects will appear here.</p>
+                        <a href="{% url 'projects:project_list' %}" class="btn btn-primary">View All Projects</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% if featured_projects %}
+        <div class="text-center mt-4">
+            <a href="{% url 'projects:project_list' %}" class="btn btn-outline-primary">View All Projects</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Partners & Sponsors -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Our Partners & Sponsors</h2>
+        <div class="row justify-content-center">
+            {% for partner in partners %}
+            <div class="col-md-3 col-6 text-center mb-4">
+                {% if partner.logo %}
+                <img src="{{ partner.logo.url }}" alt="{{ partner.name }}" class="img-fluid" style="max-height: 80px; object-fit: contain;">
+                {% else %}
+                <div class="bg-accent text-white rounded d-flex align-items-center justify-content-center mx-auto" style="width: 120px; height: 80px;">
+                    <span class="fw-bold text-center">{{ partner.name }}</span>
+                </div>
+                {% endif %}
+                <p class="mt-2 small">{{ partner.name }}</p>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <p class="text-muted">Partners information coming soon.</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <p class="lead">Do you want to partner with us?</p>
+            <a href="{% url 'contact' %}" class="btn btn-primary">Become a Sponsor</a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5 bg-accent">
+    <div class="container">
+        <h2 class="text-center mb-5 text-white">What Our Members Say</h2>
+        <div class="row">
+            {% for testimonial in testimonials %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 testimonial-card">
+                    <div class="card-body">
+                        <p class="card-text">"{{ testimonial.content }}"</p>
+                        <div class="d-flex align-items-center mt-3">
+                            <div>
+                                <h6 class="mb-0">{{ testimonial.author }}</h6>
+                                <small class="text-muted">{{ testimonial.role }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center">
+                <div class="card">
+                    <div class="card-body py-5">
+                        <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                        <h4>No Testimonials Yet</h4>
+                        <p class="text-muted">Be the first to share your experience!</p>
+                        <a href="{% url 'submit_testimonial' %}" class="btn btn-primary">Share Your Story</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Join Our Community?</h2>
+        <p class="lead mb-4">Become part of Kenya's leading actuarial student association and unlock numerous benefits.</p>
+        {% if not user.is_authenticated %}
+            <a href="{% url 'members:register' %}" class="btn btn-light btn-lg">Register Now</a>
+        {% else %}
+            <a href="{% url 'dashboard:dashboard' %}" class="btn btn-light btn-lg">Go to Dashboard</a>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+    /* Carousel improvements */
+    .carousel-item {
+        transition: transform 0.1s ease-in-out;
+    }
+    
+    .carousel-caption {
+        bottom: 2rem;
+    }
+    
+    /* Card hover effects */
+    .event-card, .project-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .event-card:hover, .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Partner logo styling */
+    .partner-logo {
+        transition: transform 0.3s ease;
+    }
+    
+    .partner-logo:hover {
+        transform: scale(1.05);
+    }
+</style>
+
+<script>
+    // Auto-advance carousel faster
+    document.addEventListener('DOMContentLoaded', function() {
+        var myCarousel = document.getElementById('mainCarousel');
+        if (myCarousel) {
+            var carousel = new bootstrap.Carousel(myCarousel, {
+                interval: 3000, // 3 seconds instead of default 5
+                wrap: true,
+                touch: true
+            });
+        }
+    });
+</script>
+{% endblock %}

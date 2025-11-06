@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load dashboard_extras %}
+
+
+{% block title %}Competitions - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 dashboard-sidebar">
+            <div class="position-sticky pt-3">
+                <div class="text-center mb-4">
+                    <div class="d-flex justify-content-center mb-3">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile" class="rounded-circle" width="80" height="80">
+                        {% else %}
+                            <div class="rounded-circle bg-accent d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <span class="text-white fw-bold fs-4">{{ user.first_name|first }}{{ user.last_name|first }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <h6 class="text-white">{{ user.get_full_name|default:user.username }}</h6>
+                    <small class="text-muted">{{ user.get_member_type_display }}</small>
+                </div>
+
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:dashboard' %}">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:my_courses' %}">
+                            <i class="fas fa-book me-2"></i> My Courses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'dashboard:competitions' %}">
+                            <i class="fas fa-trophy me-2"></i> Competitions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:progress' %}">
+                            <i class="fas fa-chart-line me-2"></i> Progress
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:profile_settings' %}">
+                            <i class="fas fa-user-cog me-2"></i> Profile Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-md-9 col-lg-10 ms-sm-auto px-4 py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Actuarial Competitions</h2>
+                <div class="text-muted">
+                    <i class="fas fa-trophy me-1"></i> Test your skills and earn points
+                </div>
+            </div>
+
+            <!-- Active Competitions -->
+            <div class="row mb-5">
+                <div class="col-12">
+                    <h4 class="mb-3">Active Competitions</h4>
+                    {% for competition in competitions %}
+                    <div class="card mb-3 competition-card">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5 class="card-title">{{ competition.title }}</h5>
+                                    <p class="card-text text-muted">{{ competition.description|truncatewords:30 }}</p>
+                                    <div class="competition-meta">
+                                        <small class="text-muted me-3">
+                                            <i class="fas fa-calendar me-1"></i> 
+                                            Ends: {{ competition.end_date|date:"M d, Y" }}
+                                        </small>
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i> 
+                                            {{ competition.end_date|timeuntil }} left
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    {% with user_submission=user_submissions_dict|get_item:competition.id %}
+                                        {% if user_submission %}
+                                            <span class="badge bg-success fs-6 mb-2">Submitted</span>
+                                            <p class="text-muted small mb-0">Score: {{ user_submission.score }}/100</p>
+                                        {% endif %}
+                                    {% endwith %}
+                                    <a href="{% url 'dashboard:competition_detail' competition.id %}" class="btn btn-primary mt-2">
+                                        {% with user_submission=user_submissions_dict|get_item:competition.id %}
+                                            {% if user_submission %}
+                                                View Submission
+                                            {% else %}
+                                                Participate
+                                            {% endif %}
+                                        {% endwith %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="card text-center">
+                        <div class="card-body py-5">
+                            <i class="fas fa-trophy fa-3x text-muted mb-3"></i>
+                            <h4>No Active Competitions</h4>
+                            <p class="text-muted">Check back later for new challenges!</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- My Submissions -->
+            {% if user_submissions %}
+            <div class="row">
+                <div class="col-12">
+                    <h4 class="mb-3">My Submissions</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Competition</th>
+                                            <th>Submission Date</th>
+                                            <th>Score</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for submission in user_submissions %}
+                                        <tr>
+                                            <td>{{ submission.competition.title }}</td>
+                                            <td>{{ submission.submitted_at|date:"M d, Y" }}</td>
+                                            <td>
+                                                {% if submission.score %}
+                                                <span class="fw-bold text-accent">{{ submission.score }}/100</span>
+                                                {% else %}
+                                                <span class="text-muted">Pending</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if submission.score %}
+                                                <span class="badge bg-success">Graded</span>
+                                                {% else %}
+                                                <span class="badge bg-warning">Processing</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'dashboard:competition_detail' submission.competition.id %}" class="btn btn-sm btn-outline-primary">
+                                                    View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .competition-card {
+        transition: transform 0.3s ease;
+    }
+    
+    .competition-card:hover {
+        transform: translateY(-3px);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 dashboard-sidebar">
+            <div class="position-sticky pt-3">
+                <div class="text-center mb-4">
+                    <div class="d-flex justify-content-center mb-3">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile" class="rounded-circle" width="80" height="80">
+                        {% else %}
+                            <div class="rounded-circle bg-accent d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <span class="text-white fw-bold fs-4">{{ user.first_name|first }}{{ user.last_name|first }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <h6 class="text-white">{{ user.get_full_name|default:user.username }}</h6>
+                    <small class="text-muted">{{ user.get_member_type_display }}</small>
+                </div>
+
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'dashboard:dashboard' %}">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:my_courses' %}">
+                            <i class="fas fa-book me-2"></i> My Courses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:competitions' %}">
+                            <i class="fas fa-trophy me-2"></i> Competitions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:progress' %}">
+                            <i class="fas fa-chart-line me-2"></i> Progress
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:profile_settings' %}">
+                            <i class="fas fa-user-cog me-2"></i> Profile Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-md-9 col-lg-10 ms-sm-auto px-4 py-4">
+            <!-- Welcome Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card bg-accent text-white">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h3 class="card-title">Welcome back, {{ user.first_name }}! 👋</h3>
+                                    <p class="card-text">Continue your actuarial journey with KARUASA. Check out your progress and upcoming activities.</p>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="display-4 fw-bold">{{ user_progress.total_points }}</div>
+                                    <small>Total Points</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title text-muted">Courses Completed</h6>
+                                    <h3 class="text-accent">{{ enrolled_courses }}</h3>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-graduation-cap fa-2x text-accent"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title text-muted">Current Level</h6>
+                                    <h3 class="text-accent">{{ user_progress.current_level }}</h3>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-level-up-alt fa-2x text-accent"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="card-title text-muted">Active Competitions</h6>
+                                    <h3 class="text-accent">{{ competitions|length }}</h3>
+                                </div>
+                                <div class="align-self-center">
+                                    <i class="fas fa-trophy fa-2x text-accent"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Competitions -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Active Competitions</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if competitions %}
+                                <div class="row">
+                                    {% for competition in competitions %}
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card border-accent">
+                                            <div class="card-body">
+                                                <h6 class="card-title">{{ competition.title }}</h6>
+                                                <p class="card-text small text-muted">{{ competition.description|truncatewords:20 }}</p>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <small class="text-muted">Ends: {{ competition.end_date|date:"M d, Y" }}</small>
+                                                    <a href="{% url 'dashboard:competition_detail' competition.id %}" class="btn btn-sm btn-primary">Participate</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">No active competitions at the moment. Check back later!</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'dashboard:my_courses' %}" class="btn btn-outline-primary btn-lg w-100 py-3">
+                                        <i class="fas fa-book fa-2x mb-2"></i><br>
+                                        Browse Courses
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'projects:project_list' %}" class="btn btn-outline-primary btn-lg w-100 py-3">
+                                        <i class="fas fa-project-diagram fa-2x mb-2"></i><br>
+                                        View Projects
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'resources:resource_list' %}" class="btn btn-outline-primary btn-lg w-100 py-3">
+                                        <i class="fas fa-download fa-2x mb-2"></i><br>
+                                        Resources
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="{% url 'blog:post_list' %}" class="btn btn-outline-primary btn-lg w-100 py-3">
+                                        <i class="fas fa-newspaper fa-2x mb-2"></i><br>
+                                        Read Blog
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

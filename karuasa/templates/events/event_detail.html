@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ event.title }} - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Event Header -->
+            <div class="card mb-4">
+                <img src="{{ event.featured_image.url }}" class="card-img-top" alt="{{ event.title }}" style="max-height: 400px; object-fit: cover;">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge {% if event.event_type == 'upcoming' %}bg-success{% else %}bg-secondary{% endif %} fs-6">
+                            {{ event.get_event_type_display }}
+                        </span>
+                        <div class="text-end">
+                            <div class="fw-bold text-accent">{{ event.date|date:"F d, Y" }}</div>
+                            <div class="text-muted">{{ event.date|date:"h:i A" }}</div>
+                        </div>
+                    </div>
+                    
+                    <h1 class="card-title mb-3">{{ event.title }}</h1>
+                    
+                    <div class="d-flex align-items-center text-muted mb-4">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        <span>{{ event.location }}</span>
+                    </div>
+
+                    <div class="event-content">
+                        {{ event.description|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event Photos -->
+            {% if event.photos.all %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-images me-2"></i>Event Photos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for photo in event.photos.all %}
+                        <div class="col-md-4 mb-3">
+                            <img src="{{ photo.image.url }}" alt="{{ photo.caption }}" class="img-fluid rounded" style="height: 200px; width: 100%; object-fit: cover;">
+                            {% if photo.caption %}
+                            <p class="small text-muted mt-2 mb-0">{{ photo.caption }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Event Details Sidebar -->
+            <div class="card mb-4">
+                <div class="card-header bg-accent text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Event Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong><i class="fas fa-calendar me-2 text-accent"></i>Date & Time</strong>
+                        <p class="mb-0">{{ event.date|date:"F d, Y" }}</p>
+                        <p class="text-muted small">{{ event.date|date:"h:i A" }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong><i class="fas fa-map-marker-alt me-2 text-accent"></i>Location</strong>
+                        <p class="mb-0">{{ event.location }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong><i class="fas fa-tag me-2 text-accent"></i>Event Type</strong>
+                        <p class="mb-0">{{ event.get_event_type_display }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Events -->
+            {% if related_events %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-link me-2"></i>Related Events</h5>
+                </div>
+                <div class="card-body">
+                    {% for related_event in related_events %}
+                    <div class="mb-3 pb-3 {% if not forloop.last %}border-bottom{% endif %}">
+                        <h6 class="mb-1">{{ related_event.title }}</h6>
+                        <p class="small text-muted mb-2">{{ related_event.date|date:"M d, Y" }}</p>
+                        <a href="{% url 'events:event_detail' related_event.pk %}" class="btn btn-sm btn-outline-primary">View</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

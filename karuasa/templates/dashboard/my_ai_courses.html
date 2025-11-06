@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My AI Courses - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 dashboard-sidebar">
+            {% include 'dashboard/sidebar.html' %}
+        </div>
+
+        <!-- Main content -->
+        <div class="col-md-9 col-lg-10 ms-sm-auto px-4 py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">🤖 My AI Courses</h2>
+                <div>
+                    <a href="{% url 'dashboard:generate_ai_course' %}" class="btn btn-accent me-2">
+                        <i class="fas fa-plus me-2"></i>Generate New Course
+                    </a>
+                    <a href="{% url 'dashboard:my_courses' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-book me-2"></i>Standard Courses
+                    </a>
+                </div>
+            </div>
+
+            <!-- AI Courses Grid -->
+            <div class="row">
+                {% for course in ai_courses %}
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card h-100 course-card border-success">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <span class="badge bg-warning">AI Generated</span>
+                            <span class="badge bg-light text-dark">{{ course.get_level_display }}</span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title text-accent">{{ course.title }}</h5>
+                            <p class="card-text text-muted small">{{ course.description|truncatewords:15 }}</p>
+                            
+                            <div class="course-meta mb-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i> {{ course.duration }}
+                                </small>
+                                <br>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i> {{ course.created_at|date:"M d, Y" }}
+                                </small>
+                            </div>
+                            
+                            <div class="topics-preview">
+                                <small class="text-muted fw-bold">Key Topics:</small>
+                                <div class="d-flex flex-wrap gap-1 mt-1">
+                                    {% for topic in course.get_topics_list|slice:":3" %}
+                                    <span class="badge bg-light text-dark small">{{ topic|truncatewords:2 }}</span>
+                                    {% endfor %}
+                                    {% if course.get_topics_list|length > 3 %}
+                                    <span class="badge bg-secondary small">+{{ course.get_topics_list|length|add:"-3" }} more</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'dashboard:ai_course_detail' course.id %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye me-1"></i>View Course
+                                </a>
+                                <a href="{% url 'dashboard:mark_ai_course_complete' course.id %}" class="btn btn-success btn-sm">
+                                    <i class="fas fa-check me-1"></i>Mark Complete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="card text-center border-dashed">
+                        <div class="card-body py-5">
+                            <i class="fas fa-robot fa-3x text-muted mb-3"></i>
+                            <h4 class="text-muted">No AI Courses Yet</h4>
+                            <p class="text-muted mb-4">Generate your first AI-powered course to get started!</p>
+                            <a href="{% url 'dashboard:generate_ai_course' %}" class="btn btn-accent btn-lg">
+                                <i class="fas fa-magic me-2"></i>Generate Your First Course
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Stats Section -->
+            {% if ai_courses %}
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-3">
+                                    <h3 class="text-accent fw-bold">{{ ai_courses.count }}</h3>
+                                    <p class="text-muted mb-0">AI Courses</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h3 class="text-success fw-bold">{{ ai_courses|length }}</h3>
+                                    <p class="text-muted mb-0">Active</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h3 class="text-warning fw-bold">{{ ai_courses|length }}</h3>
+                                    <p class="text-muted mb-0">In Progress</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <h3 class="text-info fw-bold">0</h3>
+                                    <p class="text-muted mb-0">Completed</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .course-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #e9ecef;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-sidebar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .dashboard-sidebar .nav-link {
+        color: rgba(255, 255, 255, 0.8);
+        padding: 12px 15px;
+        margin-bottom: 5px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .dashboard-sidebar .nav-link:hover,
+    .dashboard-sidebar .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .border-dashed {
+        border: 2px dashed #dee2e6 !important;
+    }
+
+    .btn-accent {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-accent:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        color: white;
+    }
+
+    .text-accent {
+        color: #667eea !important;
+    }
+</style>
+{% endblock %}

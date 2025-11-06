@@ -1,0 +1,1123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Karatina University Actuarial Students Association{% endblock %}</title>
+
+    <link rel="icon" type="image/x-icon" href="{% static 'images/asalogo.jpg' %}">
+    
+    <!-- Open Graph Meta Tags for Rich Sharing -->
+    <meta property="og:title" content="{% block og_title %}Karatina University Actuarial Students Association{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Empowering Future Actuaries Through Knowledge, Innovation, and Professional Excellence{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'images/og-default.jpg' %}{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:site_name" content="KARUASA">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Karatina University Actuarial Students Association{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Empowering Future Actuaries Through Knowledge, Innovation, and Professional Excellence{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{% static 'images/og-default.jpg' %}{% endblock %}">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-bg: #FFFFFF;
+            --accent-cyan: #00CED1;
+            --text-dark: #000033;
+            --subtle-accent: #FFEFD5;
+            --accent-hover: #00B8B8;
+            --text-light: #666687;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--primary-bg);
+            line-height: 1.6;
+        }
+        
+        /* Professional Navbar Styling */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-bg) 0%, #f8f9fa 100%) !important;
+            box-shadow: 0 2px 20px rgba(0, 0, 51, 0.1);
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(0, 206, 209, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            padding: 0;
+            margin-right: 2rem;
+        }
+
+        .navbar-logo {
+            height: 45px;
+            transition: all 0.3s ease;
+            filter: brightness(0.9);
+        }
+
+        .brand-text {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-hover));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-link {
+            color: var(--text-dark) !important;
+            font-weight: 500;
+            margin: 0 4px;
+            padding: 10px 16px !important;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            position: relative;
+            border: 1px solid transparent;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-cyan) !important;
+            background: rgba(0, 206, 209, 0.08);
+            border: 1px solid rgba(0, 206, 209, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .nav-link.active {
+            color: var(--accent-cyan) !important;
+            background: rgba(0, 206, 209, 0.12);
+            border: 1px solid rgba(0, 206, 209, 0.3);
+            font-weight: 600;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background: var(--accent-cyan);
+            border-radius: 2px;
+        }
+
+        .user-menu {
+            background: rgba(0, 206, 209, 0.1);
+            border: 1px solid rgba(0, 206, 209, 0.3) !important;
+            font-weight: 600;
+        }
+
+        .login-link {
+            color: var(--text-light) !important;
+            font-weight: 500;
+        }
+
+        .login-link:hover {
+            color: var(--accent-cyan) !important;
+            background: rgba(0, 206, 209, 0.08);
+        }
+
+        .join-btn {
+            padding: 8px 20px !important;
+            font-size: 0.9rem;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 206, 209, 0.3);
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 51, 0.15);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            margin-top: 8px;
+        }
+
+        .dropdown-item {
+            padding: 0.6rem 1.2rem;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 206, 209, 0.1);
+            color: var(--accent-cyan);
+        }
+
+        .navbar-toggler {
+            border: 1px solid rgba(0, 206, 209, 0.3);
+            padding: 0.4rem 0.6rem;
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: 0 0 0 2px rgba(0, 206, 209, 0.3);
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: white;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+            border-color: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 206, 209, 0.3);
+        }
+        
+        .btn-outline-primary {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-primary:hover {
+            background-color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(0, 206, 209, 0.9), rgba(0, 0, 51, 0.8)), url('{% static "images/hero-bg.jpg" %}');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 120px 0;
+            text-align: center;
+        }
+        
+        .hero-section h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .hero-section .lead {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        /* Sections */
+        .section-padding {
+            padding: 80px 0;
+        }
+        
+        .bg-light-custom {
+            background-color: #f8f9fa !important;
+        }
+        
+        .bg-accent {
+            background-color: var(--subtle-accent) !important;
+        }
+        
+        /* Cards */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            background-color: white;
+            border-bottom: 2px solid var(--accent-cyan);
+            font-weight: 600;
+        }
+        
+        /* Testimonials */
+        .testimonial-card {
+            background: linear-gradient(135deg, var(--primary-bg), var(--subtle-accent));
+            border-left: 4px solid var(--accent-cyan);
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, var(--text-dark) 0%, #1a1a4a 100%);
+            color: white;
+            padding: 60px 0 30px;
+            position: relative;
+        }
+        
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-hover));
+        }
+        
+        .footer h5 {
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .footer a {
+            color: #ccc;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer a:hover {
+            color: var(--accent-cyan);
+            transform: translateX(5px);
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 12px;
+            margin-top: 1rem;
+        }
+        
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .social-icon:hover {
+            transform: translateY(-3px);
+            background: var(--accent-cyan);
+            color: var(--text-dark);
+            box-shadow: 0 5px 15px rgba(0, 206, 209, 0.4);
+        }
+        
+        .social-icon.facebook:hover {
+            background: #1877F2;
+            color: white;
+        }
+        
+        .social-icon.twitter:hover {
+            background: #1DA1F2;
+            color: white;
+        }
+        
+        .social-icon.linkedin:hover {
+            background: #0077B5;
+            color: white;
+        }
+        
+        .social-icon.instagram:hover {
+            background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D);
+            color: white;
+        }
+        
+        .social-icon.whatsapp:hover {
+            background: #25D366;
+            color: white;
+        }
+        
+        .social-icon.youtube:hover {
+            background: #FF0000;
+            color: white;
+        }
+        
+        .social-icon.tiktok:hover {
+            background: #000000;
+            color: white;
+        }
+        
+        /* Dashboard Styles */
+        .dashboard-sidebar {
+            background: linear-gradient(180deg, var(--text-dark), #1a1a4a);
+            color: white;
+            min-height: 100vh;
+            padding: 0;
+        }
+        
+        .dashboard-sidebar .nav-link {
+            color: #ccc !important;
+            padding: 12px 20px !important;
+            margin: 0;
+            border-radius: 0;
+            border-left: 3px solid transparent;
+        }
+        
+        .dashboard-sidebar .nav-link:hover,
+        .dashboard-sidebar .nav-link.active {
+            color: white !important;
+            background-color: rgba(0, 206, 209, 0.2);
+            border-left-color: var(--accent-cyan);
+        }
+        
+        .progress-bar {
+            background-color: var(--accent-cyan);
+        }
+        
+        /* Utility Classes */
+        .text-accent {
+            color: var(--accent-cyan) !important;
+        }
+        
+        .bg-accent {
+            background-color: var(--accent-cyan) !important;
+        }
+        
+        .border-accent {
+            border-color: var(--accent-cyan) !important;
+        }
+        
+        .shadow-custom {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        /* Chatbot Styles - Updated for Mobile Responsiveness */
+        #chatbot-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .chatbot-btn {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-hover));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 206, 209, 0.4);
+            transition: all 0.3s ease;
+            border: 3px solid white;
+        }
+
+        .chatbot-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(0, 206, 209, 0.6);
+        }
+
+        .chatbot-container {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            border: 1px solid #e0e0e0;
+        }
+
+        .chatbot-container.active {
+            display: flex;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, var(--text-dark), #1a1a4a);
+            color: white;
+            padding: 15px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-header h6 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+        }
+
+        .user-message {
+            justify-content: flex-end;
+        }
+
+        .bot-message {
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .user-message .message-content {
+            background: var(--accent-cyan);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message .message-content {
+            background: white;
+            color: var(--text-dark);
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 5px;
+        }
+
+        .chatbot-input {
+            padding: 15px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+            background: white;
+            border-radius: 0 0 15px 15px;
+        }
+
+        #chatbot-input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        #chatbot-input:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        #send-message {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: none;
+            padding: 12px 16px;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 18px;
+            border-bottom-left-radius: 5px;
+            max-width: 80%;
+        }
+
+        .typing-indicator span {
+            animation: typing 1.4s infinite;
+            display: inline-block;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                background: var(--primary-bg);
+                padding: 1rem;
+                border-radius: 12px;
+                box-shadow: 0 8px 25px rgba(0, 0, 51, 0.15);
+                margin-top: 1rem;
+                border: 1px solid rgba(0, 206, 209, 0.2);
+            }
+            
+            .nav-link {
+                margin: 2px 0;
+                text-align: center;
+            }
+            
+            .navbar-nav .btn {
+                margin: 0.5rem 0;
+                text-align: center;
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-section .lead {
+                font-size: 1.1rem;
+            }
+            
+            .section-padding {
+                padding: 60px 0;
+            }
+            
+            .navbar-brand img {
+                height: 40px;
+            }
+            
+            .brand-text {
+                font-size: 1.5rem;
+            }
+            
+            .social-icons {
+                justify-content: center;
+            }
+            
+            .footer .col-md-6,
+            .footer .col-lg-3 {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+            
+            /* Mobile Chatbot Styles */
+            .chatbot-container {
+                width: 300px;
+                height: 400px;
+                right: 10px;
+                bottom: 70px;
+            }
+            
+            #chatbot-widget {
+                bottom: 15px;
+                right: 15px;
+            }
+            
+            .chatbot-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 22px;
+            }
+            
+            .message-content {
+                max-width: 85%;
+                font-size: 13px;
+                padding: 10px 14px;
+            }
+            
+            .chatbot-messages {
+                padding: 12px;
+            }
+            
+            .chatbot-input {
+                padding: 12px;
+            }
+            
+            #chatbot-input {
+                padding: 10px;
+                font-size: 13px;
+            }
+            
+            #send-message {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chatbot-container {
+                width: 280px;
+                height: 380px;
+                right: 5px;
+                bottom: 65px;
+            }
+            
+            #chatbot-widget {
+                bottom: 10px;
+                right: 10px;
+            }
+            
+            .chatbot-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            
+            .chatbot-header {
+                padding: 12px;
+            }
+            
+            .chatbot-header h6 {
+                font-size: 14px;
+            }
+            
+            .message-content {
+                max-width: 90%;
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            
+            .chatbot-messages {
+                padding: 10px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .chatbot-container {
+                width: 260px;
+                height: 350px;
+                right: 5px;
+            }
+            
+            .chatbot-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                {% if site_info and site_info.logo %}
+                    <img src="{{ site_info.logo.url }}" alt="KARUASA Logo" class="navbar-logo">
+                {% else %}
+                    <span class="fw-bold brand-text">KARUASA</span>
+                {% endif %}
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'about' in request.path %}active{% endif %}" href="{% url 'about_us' %}">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'events' in request.path %}active{% endif %}" href="{% url 'events:event_list' %}">Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'projects' in request.path %}active{% endif %}" href="{% url 'projects:project_list' %}">Projects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'resources' in request.path %}active{% endif %}" href="{% url 'resources:resource_list' %}">Resources</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'blog' in request.path %}active{% endif %}" href="{% url 'blog:post_list' %}">News & Blog</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'gallery' in request.path %}active{% endif %}" href="{% url 'gallery:album_list' %}">Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'contact' in request.path %}active{% endif %}" href="{% url 'contact' %}">Contact</a>
+                    </li>
+                </ul>
+                
+                <div class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <div class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle user-menu" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-1"></i> 
+                                {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'dashboard:dashboard' %}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'members:profile' %}"><i class="fas fa-user me-2"></i>Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'members:logout' %}"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a class="nav-link login-link" href="{% url 'members:login' %}">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login
+                        </a>
+                        <a class="btn btn-primary ms-2 join-btn" href="{% url 'members:register' %}">
+                            <i class="fas fa-user-plus me-1"></i> Join Us
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5>KARUASA</h5>
+                    <p>Karatina University Actuarial Students Association - Empowering future actuaries through knowledge sharing and professional development.</p>
+                    <div class="social-icons">
+                        {% if site_info.facebook %}
+                            <a href="{{ site_info.facebook }}" class="social-icon facebook" target="_blank" title="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                        {% endif %}
+                        {% if site_info.twitter %}
+                            <a href="{{ site_info.twitter }}" class="social-icon twitter" target="_blank" title="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        {% endif %}
+                        {% if site_info.linkedin %}
+                            <a href="{{ site_info.linkedin }}" class="social-icon linkedin" target="_blank" title="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        {% endif %}
+                        {% if site_info.instagram %}
+                            <a href="{{ site_info.instagram }}" class="social-icon instagram" target="_blank" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        {% endif %}
+                        {% if site_info.whatsapp %}
+                            <a href="{{ site_info.whatsapp }}" class="social-icon whatsapp" target="_blank" title="WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                        {% endif %}
+                        {% if site_info.youtube %}
+                            <a href="{{ site_info.youtube }}" class="social-icon youtube" target="_blank" title="YouTube">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        {% endif %}
+                        <!-- Additional social media icons -->
+                        <a href="https://whatsapp.com/channel/0029VaGvixqId7nOceC9TB2r" class="social-icon whatsapp" target="_blank" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+
+                        <a href="https://x.com/yourusername" class="social-icon twitter" target="_blank" title="X">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+
+                        <a href="https://linkedin.com/company/karuasa" class="social-icon linkedin" target="_blank" title="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'home' %}">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'about_us' %}">About Us</a></li>
+                        <li class="mb-2"><a href="{% url 'events:event_list' %}">Events</a></li>
+                        <li class="mb-2"><a href="{% url 'projects:project_list' %}">Projects</a></li>
+                        <li class="mb-2"><a href="{% url 'resources:resource_list' %}">Resources</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Resources</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'resources:resource_list' %}?type=notes">Study Notes</a></li>
+                        <li class="mb-2"><a href="{% url 'resources:resource_list' %}?type=exam_prep">Exam Preparation</a></li>
+                        <li class="mb-2"><a href="{% url 'resources:resource_list' %}?type=career">Career Resources</a></li>
+                        <li class="mb-2"><a href="{% url 'blog:post_list' %}">Blog & News</a></li>
+                        <li class="mb-2"><a href="{% url 'gallery:album_list' %}">Gallery</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5>Contact Info</h5>
+                    {% if site_info %}
+                        <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> {{ site_info.address }}</p>
+                        <p class="mb-2"><i class="fas fa-phone me-2"></i> {{ site_info.phone }}</p>
+                        <p class="mb-2"><i class="fas fa-envelope me-2"></i> {{ site_info.email }}</p>
+                    {% else %}
+                        <p class="mb-2"><i class="fas fa-map-marker-alt me-2"></i> Karatina University</p>
+                        <p class="mb-2"><i class="fas fa-phone me-2"></i> +254 701519479</p>
+                        <p class="mb-2"><i class="fas fa-envelope me-2"></i> karuactuaries@gmail.com</p>
+                    {% endif %}
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2025 Karatina University Actuarial Students Association. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Chatbot Widget -->
+    <div id="chatbot-widget">
+        <div id="chatbot-button" class="chatbot-btn">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div id="chatbot-container" class="chatbot-container">
+            <div class="chatbot-header">
+                <h6><i class="fas fa-robot me-2"></i>KARUASA Assistant</h6>
+                <button id="close-chatbot" class="btn-close btn-close-white"></button>
+            </div>
+            <div id="chatbot-messages" class="chatbot-messages">
+                <div class="chat-message bot-message">
+                    <div class="message-content">
+                        <strong>KARUASA Assistant:</strong> Hello! I'm here to help with actuarial science, programming, mathematics, economics, and exam preparation. How can I assist you today?
+                    </div>
+                </div>
+            </div>
+            <div class="chatbot-input">
+                <input type="text" id="chatbot-input" placeholder="Ask about actuarial science, programming, math..." maxlength="500">
+                <button id="send-message" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot JavaScript -->
+    <script>
+        class KARUASAChatbot {
+            constructor() {
+                this.isOpen = false;
+                this.isProcessing = false;
+                this.csrfToken = this.getCSRFToken();
+                this.init();
+            }
+
+            getCSRFToken() {
+                const cookieValue = document.cookie
+                    .split('; ')
+                    .find(row => row.startsWith('csrftoken='))
+                    ?.split('=')[1];
+                return cookieValue || '';
+            }
+
+            init() {
+                // DOM elements
+                this.chatbotButton = document.getElementById('chatbot-button');
+                this.chatbotContainer = document.getElementById('chatbot-container');
+                this.closeButton = document.getElementById('close-chatbot');
+                this.sendButton = document.getElementById('send-message');
+                this.chatInput = document.getElementById('chatbot-input');
+                this.messagesContainer = document.getElementById('chatbot-messages');
+
+                // Event listeners
+                this.chatbotButton.addEventListener('click', () => this.toggleChat());
+                this.closeButton.addEventListener('click', () => this.closeChat());
+                this.sendButton.addEventListener('click', () => this.sendMessage());
+                this.chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !this.isProcessing) this.sendMessage();
+                });
+
+                // Close chatbot when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!this.chatbotContainer.contains(e.target) && 
+                        !this.chatbotButton.contains(e.target) && 
+                        this.isOpen) {
+                        this.closeChat();
+                    }
+                });
+            }
+
+            toggleChat() {
+                this.isOpen = !this.isOpen;
+                this.chatbotContainer.classList.toggle('active', this.isOpen);
+                if (this.isOpen) {
+                    this.chatInput.focus();
+                }
+            }
+
+            closeChat() {
+                this.isOpen = false;
+                this.chatbotContainer.classList.remove('active');
+            }
+
+            async sendMessage() {
+                if (this.isProcessing) return;
+                
+                const message = this.chatInput.value.trim();
+                if (!message) return;
+
+                // Add user message
+                this.addMessage(message, 'user');
+                this.chatInput.value = '';
+                this.isProcessing = true;
+                this.sendButton.disabled = true;
+
+                // Show typing indicator
+                this.showTypingIndicator();
+
+                try {
+                    // Get response from Django backend
+                    const response = await this.getChatbotResponse(message);
+                    this.hideTypingIndicator();
+                    this.addMessage(response, 'bot');
+                } catch (error) {
+                    this.hideTypingIndicator();
+                    console.error('Chatbot error:', error);
+                    
+                    // More specific error messages
+                    if (error.message.includes('Network') || error.message.includes('Failed to fetch')) {
+                        this.addMessage('Network error. Please check your internet connection and try again.', 'bot');
+                    } else if (error.message.includes('500')) {
+                        this.addMessage('Server error. Please try again in a moment.', 'bot');
+                    } else {
+                        this.addMessage('I apologize, but I\'m having trouble connecting right now. Please try again later.', 'bot');
+                    }
+                } finally {
+                    this.isProcessing = false;
+                    this.sendButton.disabled = false;
+                }
+            }
+
+            async getChatbotResponse(userMessage) {
+                const formData = new FormData();
+                formData.append('message', userMessage);
+                formData.append('csrfmiddlewaretoken', this.csrfToken);
+
+                const response = await fetch('/chatbot-api/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                if (!data.response) {
+                    throw new Error('No response from server');
+                }
+
+                return data.response;
+            }
+
+            addMessage(content, sender) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `chat-message ${sender}-message`;
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'message-content';
+                
+                if (sender === 'bot') {
+                    contentDiv.innerHTML = `<strong>KARUASA Assistant:</strong> ${this.formatMessage(content)}`;
+                } else {
+                    contentDiv.textContent = content;
+                }
+                
+                messageDiv.appendChild(contentDiv);
+                this.messagesContainer.appendChild(messageDiv);
+                
+                // Scroll to bottom
+                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            }
+
+            formatMessage(text) {
+                // Basic formatting - convert line breaks to HTML
+                return text.replace(/\n/g, '<br>');
+            }
+
+            showTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'chat-message bot-message typing-indicator';
+                typingDiv.id = 'typing-indicator';
+                typingDiv.style.display = 'flex';
+                typingDiv.innerHTML = `
+                    <div class="message-content">
+                        <strong>KARUASA Assistant:</strong> Thinking
+                        <span>.</span><span>.</span><span>.</span>
+                    </div>
+                `;
+                this.messagesContainer.appendChild(typingDiv);
+                this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            }
+
+            hideTypingIndicator() {
+                const typingIndicator = document.getElementById('typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+        }
+
+        // Initialize chatbot when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add a small delay to ensure everything is loaded
+            setTimeout(() => {
+                try {
+                    new KARUASAChatbot();
+                    console.log('KARUASA Chatbot initialized successfully');
+                } catch (error) {
+                    console.error('Failed to initialize chatbot:', error);
+                }
+            }, 1000);
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

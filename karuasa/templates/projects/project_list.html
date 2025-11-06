@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Projects - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-5 fw-bold mb-3">Our Projects</h1>
+            <p class="lead">Discover innovative projects created by our talented members</p>
+        </div>
+    </div>
+
+    <!-- Project Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="mb-0">Browse Projects</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex gap-2 justify-content-md-end">
+                                <a href="{% url 'projects:project_list' %}" class="btn btn-sm {% if not featured %}btn-primary{% else %}btn-outline-primary{% endif %}">All Projects</a>
+                                <a href="{% url 'projects:project_list' %}?featured=1" class="btn btn-sm {% if featured %}btn-primary{% else %}btn-outline-primary{% endif %}">Featured</a>
+                                {% if user.is_authenticated %}
+                                <a href="{% url 'projects:add_project' %}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-plus me-1"></i> Add Project
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Projects Grid -->
+    <div class="row">
+        {% for project in projects %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 project-card">
+                {% if project.featured_image %}
+                <img src="{{ project.featured_image.url }}" class="card-img-top" alt="{{ project.title }}" style="height: 200px; object-fit: cover;">
+                {% endif %}
+                <div class="card-body">
+                    {% if project.is_featured %}
+                    <span class="badge bg-warning mb-2">Featured</span>
+                    {% endif %}
+                    
+                    <h5 class="card-title">{{ project.title }}</h5>
+                    <p class="card-text text-muted">{{ project.description|truncatewords:25 }}</p>
+                    
+                    <div class="project-meta mb-3">
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span><i class="fas fa-heart me-1"></i> {{ project.likes }}</span>
+                            <span><i class="fas fa-share me-1"></i> {{ project.shares }}</span>
+                            <span><i class="fas fa-calendar me-1"></i> {{ project.created_at|date:"M Y" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="project-members mb-3">
+                        <small class="text-muted">By: 
+                        {% for member in project.members.all %}
+                            {{ member.get_full_name|default:member.username }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                        </small>
+                    </div>
+
+                    {% if project.github_link or project.live_demo_link %}
+                    <div class="project-links mb-3">
+                        {% if project.github_link %}
+                        <a href="{{ project.github_link }}" target="_blank" class="btn btn-sm btn-outline-dark me-1">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        {% endif %}
+                        {% if project.live_demo_link %}
+                        <a href="{{ project.live_demo_link }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'projects:project_detail' project.pk %}" class="btn btn-primary btn-sm">View Details</a>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="likeProject({{ project.pk }})">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-share"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card text-center">
+                <div class="card-body py-5">
+                    <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
+                    <h4>No Projects Available</h4>
+                    <p class="text-muted">There are no projects to display at the moment.</p>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'projects:add_project' %}" class="btn btn-primary">Add Your First Project</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if projects.has_other_pages %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <nav aria-label="Project pagination">
+                <ul class="pagination justify-content-center">
+                    {% if projects.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ projects.previous_page_number }}{% if featured %}&featured=1{% endif %}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in projects.paginator.page_range %}
+                    <li class="page-item {% if projects.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}{% if featured %}&featured=1{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+
+                    {% if projects.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ projects.next_page_number }}{% if featured %}&featured=1{% endif %}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function likeProject(projectId) {
+    fetch(`/projects/${projectId}/like/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        }
+    });
+}
+</script>
+
+<style>
+    .project-card {
+        transition: transform 0.3s ease;
+    }
+    
+    .project-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}

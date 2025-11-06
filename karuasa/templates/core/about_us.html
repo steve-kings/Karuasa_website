@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-4 fw-bold mb-4">About KARUASA</h1>
+            <p class="lead">{{ about_content.hero_subtitle|default:"Empowering Future Actuaries Through Excellence and Innovation" }}</p>
+        </div>
+    </div>
+
+    <!-- Who We Are -->
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-6">
+            <h2 class="mb-4">Who We Are</h2>
+            {% if about_content.who_we_are %}
+                {{ about_content.who_we_are|safe }}
+            {% else %}
+                <p class="mb-4">The Karatina University Actuarial Students Association (KARUASA) is a premier student-led organization dedicated to fostering academic excellence, professional development, and innovation among actuarial science students.</p>
+                <p class="mb-4">We serve as a platform for knowledge sharing, skill development, and career advancement in the field of actuarial science.</p>
+            {% endif %}
+            <div class="d-flex gap-3">
+                <div class="text-center">
+                    <h3 class="text-accent fw-bold">{{ about_content.member_count|default:"500+" }}</h3>
+                    <p class="text-muted">Members</p>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-accent fw-bold">{{ about_content.project_count|default:"50+" }}</h3>
+                    <p class="text-muted">Projects</p>
+                </div>
+                <div class="text-center">
+                    <h3 class="text-accent fw-bold">{{ about_content.event_count|default:"100+" }}</h3>
+                    <p class="text-muted">Events</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            {% if about_content.who_we_are_image %}
+                <img src="{{ about_content.who_we_are_image.url }}" alt="KARUASA Team" class="img-fluid rounded shadow">
+            {% else %}
+                <img src="{% static 'images/group.jpeg' %}" alt="KARUASA Team" class="img-fluid rounded shadow">
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- History -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card bg-light-custom border-0">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">Our History</h2>
+                    {% if about_content.history_content %}
+                        {{ about_content.history_content|safe }}
+                    {% else %}
+                        <div class="row">
+                            <div class="col-md-4 text-center mb-4">
+                                <div class="bg-accent text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-rocket fa-2x"></i>
+                                </div>
+                                <h5>Founded</h5>
+                                <p class="text-muted">Established in 2018 to serve actuarial science students at Karatina University</p>
+                            </div>
+                            <div class="col-md-4 text-center mb-4">
+                                <div class="bg-accent text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-chart-line fa-2x"></i>
+                                </div>
+                                <h5>Growth</h5>
+                                <p class="text-muted">Rapid expansion to become one of the most active student associations</p>
+                            </div>
+                            <div class="col-md-4 text-center mb-4">
+                                <div class="bg-accent text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-trophy fa-2x"></i>
+                                </div>
+                                <h5>Achievements</h5>
+                                <p class="text-muted">Multiple awards and recognition for excellence in student leadership</p>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vision & Mission -->
+    <div class="row mb-5">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 border-accent">
+                <div class="card-body text-center p-4">
+                    <div class="bg-accent text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-eye fa-lg"></i>
+                    </div>
+                    <h4 class="card-title">Our Vision</h4>
+                    {% if about_content.vision %}
+                        <p class="card-text">{{ about_content.vision }}</p>
+                    {% else %}
+                        <p class="card-text">To be the leading actuarial students association in East Africa, producing world-class actuaries who drive innovation and excellence in the insurance and financial sectors.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 border-accent">
+                <div class="card-body text-center p-4">
+                    <div class="bg-accent text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                        <i class="fas fa-bullseye fa-lg"></i>
+                    </div>
+                    <h4 class="card-title">Our Mission</h4>
+                    {% if about_content.mission %}
+                        <p class="card-text">{{ about_content.mission }}</p>
+                    {% else %}
+                        <p class="card-text">To provide a comprehensive platform for actuarial students that fosters academic excellence, professional development, research innovation, and industry engagement through collaborative initiatives and knowledge sharing.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Constitution -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-accent text-white">
+                    <h4 class="mb-0"><i class="fas fa-file-contract me-2"></i>Our Constitution</h4>
+                </div>
+                <div class="card-body">
+                    {% if about_content.constitution_description %}
+                        <p class="card-text">{{ about_content.constitution_description }}</p>
+                    {% else %}
+                        <p class="card-text">Download our official constitution to understand our governance structure, membership guidelines, and operational procedures.</p>
+                    {% endif %}
+                    <div class="d-flex gap-3 flex-wrap">
+                        {% if constitution %}
+                            <a href="{{ constitution.document.url }}" class="btn btn-primary" target="_blank">
+                                <i class="fas fa-eye me-2"></i>View Constitution
+                            </a>
+                            <a href="{{ constitution.document.url }}" class="btn btn-outline-primary" download>
+                                <i class="fas fa-download me-2"></i>Download PDF
+                            </a>
+                            {% if constitution.version %}
+                                <span class="align-self-center text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>Version {{ constitution.version }}
+                                </span>
+                            {% endif %}
+                            {% if constitution.effective_date %}
+                                <span class="align-self-center text-muted">
+                                    <i class="fas fa-calendar me-1"></i>Effective {{ constitution.effective_date|date:"M d, Y" }}
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            <div class="text-center w-100">
+                                <i class="fas fa-file-pdf fa-2x text-muted mb-2"></i>
+                                <p class="text-muted mb-0">Constitution document will be available here once uploaded through the admin panel.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leadership -->
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-center mb-5">Our Leadership</h2>
+            <div class="row">
+                {% for leader in leaders %}
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card text-center h-100">
+                        <div class="card-body">
+                            {% if leader.image %}
+                                <img src="{{ leader.image.url }}" alt="{{ leader.name }}" class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'images/default-avatar.jpg' %}" alt="{{ leader.name }}" class="rounded-circle mb-3" width="120" height="120" style="object-fit: cover;">
+                            {% endif %}
+                            <h5 class="card-title">{{ leader.name }}</h5>
+                            <p class="text-accent fw-bold">{{ leader.position }}</p>
+                            {% if leader.bio %}
+                                <p class="card-text small text-muted">{{ leader.bio }}</p>
+                            {% else %}
+                                <p class="card-text small text-muted">Dedicated leader contributing to KARUASA's success.</p>
+                            {% endif %}
+                            {% if leader.email %}
+                                <div class="mt-2">
+                                    <a href="mailto:{{ leader.email }}" class="text-muted small">
+                                        <i class="fas fa-envelope me-1"></i>Email
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center">
+                    <div class="card">
+                        <div class="card-body py-5">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No Leaders Added Yet</h5>
+                            <p class="text-muted">Leadership information will be displayed here once added through the admin panel.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+
+# Django
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+staticfiles/
+
+# Environment variables
+.env
+
+# VSCode / IDE settings
+.vscode/
+.idea/
+
+# Migrations (optional)
+*/migrations/__pycache__/

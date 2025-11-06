@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Resources - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="row mb-5">
+        <div class="col-12 text-center">
+            <h1 class="display-5 fw-bold mb-3">Learning Resources</h1>
+            <p class="lead">Access study materials, exam prep resources, and career development tools</p>
+        </div>
+    </div>
+
+    <!-- Resource Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Resource Type</label>
+                            <select class="form-select" onchange="filterResources()" id="resourceType">
+                                <option value="">All Types</option>
+                                <option value="notes" {% if resource_type == 'notes' %}selected{% endif %}>Study Notes</option>
+                                <option value="exam_prep" {% if resource_type == 'exam_prep' %}selected{% endif %}>Exam Preparation</option>
+                                <option value="reading" {% if resource_type == 'reading' %}selected{% endif %}>Reading Materials</option>
+                                <option value="career" {% if resource_type == 'career' %}selected{% endif %}>Career Resources</option>
+                                <option value="internship" {% if resource_type == 'internship' %}selected{% endif %}>Internship Info</option>
+                                <option value="professional" {% if resource_type == 'professional' %}selected{% endif %}>Professional Tips</option>
+                                <option value="newsletter" {% if resource_type == 'newsletter' %}selected{% endif %}>Newsletters</option>
+                                <option value="past_paper" {% if resource_type == 'past_paper' %}selected{% endif %}>Past Papers</option>
+                                <option value="report" {% if resource_type == 'report' %}selected{% endif %}>Reports</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Category</label>
+                            <select class="form-select" onchange="filterResources()" id="resourceCategory">
+                                <option value="">All Categories</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}" {% if category_id == category.id|stringformat:"i" %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3 d-flex align-items-end">
+                            <a href="{% url 'resources:resource_list' %}" class="btn btn-outline-secondary w-100">Clear Filters</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resources Grid -->
+    <div class="row">
+        {% for resource in resources %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 resource-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-primary">{{ resource.get_resource_type_display }}</span>
+                        <small class="text-muted">{{ resource.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    
+                    <h5 class="card-title">{{ resource.title }}</h5>
+                    <p class="card-text text-muted">{{ resource.description|truncatewords:20 }}</p>
+                    
+                    <div class="resource-meta mb-3">
+                        <small class="text-muted">
+                            <i class="fas fa-folder me-1"></i> {{ resource.category.name }}
+                        </small>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between align-items-center">
+                        {% if resource.file %}
+                        <a href="{{ resource.file.url }}" class="btn btn-primary btn-sm" download>
+                            <i class="fas fa-download me-1"></i> Download
+                        </a>
+                        {% elif resource.external_link %}
+                        <a href="{{ resource.external_link }}" target="_blank" class="btn btn-primary btn-sm">
+                            <i class="fas fa-external-link-alt me-1"></i> Visit Link
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'resources:resource_detail' resource.pk %}" class="btn btn-outline-primary btn-sm">Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="card text-center">
+                <div class="card-body py-5">
+                    <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+                    <h4>No Resources Available</h4>
+                    <p class="text-muted">There are no resources matching your criteria.</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if resources.has_other_pages %}
+    <div class="row mt-5">
+        <div class="col-12">
+            <nav aria-label="Resource pagination">
+                <ul class="pagination justify-content-center">
+                    {% if resources.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ resources.previous_page_number }}{% if resource_type %}&type={{ resource_type }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}">Previous</a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in resources.paginator.page_range %}
+                    <li class="page-item {% if resources.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}{% if resource_type %}&type={{ resource_type }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+
+                    {% if resources.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ resources.next_page_number }}{% if resource_type %}&type={{ resource_type }}{% endif %}{% if category_id %}&category={{ category_id }}{% endif %}">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function filterResources() {
+    const type = document.getElementById('resourceType').value;
+    const category = document.getElementById('resourceCategory').value;
+    
+    let url = '{% url "resources:resource_list" %}?';
+    if (type) url += `type=${type}&`;
+    if (category) url += `category=${category}`;
+    
+    window.location.href = url;
+}
+</script>
+
+<style>
+    .resource-card {
+        transition: transform 0.3s ease;
+    }
+    
+    .resource-card:hover {
+        transform: translateY(-3px);
+    }
+</style>
+{% endblock %}

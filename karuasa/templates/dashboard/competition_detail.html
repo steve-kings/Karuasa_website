@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ competition.title }} - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 dashboard-sidebar">
+            <div class="position-sticky pt-3">
+                <div class="text-center mb-4">
+                    <div class="d-flex justify-content-center mb-3">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="Profile" class="rounded-circle" width="80" height="80">
+                        {% else %}
+                            <div class="rounded-circle bg-accent d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                <span class="text-white fw-bold fs-4">{{ user.first_name|first }}{{ user.last_name|first }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <h6 class="text-white">{{ user.get_full_name|default:user.username }}</h6>
+                    <small class="text-muted">{{ user.get_member_type_display }}</small>
+                </div>
+
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:dashboard' %}">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:my_courses' %}">
+                            <i class="fas fa-book me-2"></i> My Courses
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'dashboard:competitions' %}">
+                            <i class="fas fa-trophy me-2"></i> Competitions
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:progress' %}">
+                            <i class="fas fa-chart-line me-2"></i> Progress
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'dashboard:profile_settings' %}">
+                            <i class="fas fa-user-cog me-2"></i> Profile Settings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-md-9 col-lg-10 ms-sm-auto px-4 py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard:dashboard' %}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'dashboard:competitions' %}">Competitions</a></li>
+                            <li class="breadcrumb-item active">{{ competition.title }}</li>
+                        </ol>
+                    </nav>
+                    <h2 class="mb-0">{{ competition.title }}</h2>
+                    <p class="text-muted mb-0">{{ competition.start_date|date:"F d, Y" }} - {{ competition.end_date|date:"F d, Y" }}</p>
+                </div>
+                <div>
+                    {% if competition.is_active %}
+                    <span class="badge bg-success fs-6">Active</span>
+                    {% else %}
+                    <span class="badge bg-secondary fs-6">Ended</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Competition Details -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Competition Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">{{ competition.description }}</p>
+                            
+                            <div class="competition-problem mt-4">
+                                <h5>Problem Statement</h5>
+                                <div class="bg-light p-4 rounded">
+                                    {{ competition.problem_statement|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submission Form -->
+                    {% if competition.is_active and not user_submission %}
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-paper-plane me-2"></i>Submit Your Solution</h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'dashboard:submit_competition' competition.id %}">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="solution" class="form-label fw-bold">Your Solution</label>
+                                    <textarea class="form-control" id="solution" name="solution" rows="10" 
+                                              placeholder="Enter your detailed solution here..." required></textarea>
+                                    <div class="form-text">
+                                        Provide a comprehensive solution to the problem above. Include all calculations, reasoning, and explanations.
+                                    </div>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fas fa-paper-plane me-2"></i> Submit Solution
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% elif user_submission %}
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>Your Submission</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-info-circle me-2"></i>Submission Status</h6>
+                                <p class="mb-2">You submitted your solution on {{ user_submission.submitted_at|date:"F d, Y" }}</p>
+                                {% if user_submission.score %}
+                                <p class="mb-0 fw-bold">Your Score: {{ user_submission.score }}/100</p>
+                                {% else %}
+                                <p class="mb-0">Your submission is being evaluated...</p>
+                                {% endif %}
+                            </div>
+                            
+                            <h6>Your Solution:</h6>
+                            <div class="bg-light p-3 rounded">
+                                {{ user_submission.solution|linebreaks }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-lg-4">
+                    <!-- Competition Info -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-accent text-white">
+                            <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Competition Timeline</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <strong>Start Date:</strong>
+                                <p class="text-muted mb-0">{{ competition.start_date|date:"F d, Y" }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <strong>End Date:</strong>
+                                <p class="text-muted mb-0">{{ competition.end_date|date:"F d, Y" }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Time Remaining:</strong>
+                                <p class="text-muted mb-0">{{ competition.end_date|timeuntil }}</p>
+                            </div>
+                            <div class="progress mb-3" style="height: 8px;">
+                                {% with progress=competition.progress_percentage %}
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ progress }}%" 
+                                     aria-valuenow="{{ progress }}" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="100"></div>
+                                {% endwith %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard -->
+                    {% if leaderboard %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-trophy me-2"></i>Leaderboard</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Participant</th>
+                                            <th>Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for submission in leaderboard %}
+                                        <tr class="{% if submission.participant == user %}table-primary{% endif %}">
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>
+                                                {% if submission.participant == user %}
+                                                <strong>You</strong>
+                                                {% else %}
+                                                {{ submission.participant.get_full_name|default:submission.participant.username }}
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-accent">{{ submission.score }}</span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Competition Rules -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-list-alt me-2"></i>Competition Rules</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="small text-muted mb-0">
+                                <li>Only one submission per participant</li>
+                                <li>Submissions are evaluated automatically using AI</li>
+                                <li>Solutions are scored on mathematical accuracy and reasoning</li>
+                                <li>Late submissions are not accepted</li>
+                                <li>All solutions must be your own work</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .competition-problem {
+        line-height: 1.6;
+    }
+    
+    .competition-problem h5 {
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+    }
+    
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    .progress {
+        background-color: #e9ecef;
+    }
+</style>
+{% endblock %}

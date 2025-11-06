@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container section-padding">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-custom">
+                <div class="card-header text-center">
+                    <h3 class="card-title mb-0">Member Login</h3>
+                    <p class="text-muted mb-0">Access your KARUASA account</p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i> Login
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p class="mb-0">Don't have an account? <a href="{% url 'members:register' %}" class="text-accent">Register here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-control {
+        border-radius: 8px;
+        padding: 12px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--accent-cyan);
+        box-shadow: 0 0 0 0.2rem rgba(0, 206, 209, 0.25);
+    }
+</style>
+{% endblock %}

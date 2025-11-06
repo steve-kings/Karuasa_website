@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Learn: {{ course.title }} - KARUASA{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 dashboard-sidebar">
+            {% include 'dashboard/sidebar.html' %}
+        </div>
+
+        <!-- Main content -->
+        <div class="col-md-9 col-lg-10 ms-sm-auto px-4 py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-0">🎓 Learning: {{ course.title }}</h2>
+                    <div class="progress mt-2" style="width: 300px; height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ user_progress.progress_percentage }}%"
+                             aria-valuenow="{{ user_progress.progress_percentage }}" 
+                             aria-valuemin="0" aria-valuemax="100">
+                        </div>
+                    </div>
+                    <small class="text-muted">{{ user_progress.progress_percentage|floatformat:0 }}% Complete</small>
+                </div>
+                <div>
+                    <a href="{% url 'dashboard:ai_course_progress' course.id %}" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-chart-line me-2"></i>Progress
+                    </a>
+                    <a href="{% url 'dashboard:ai_course_detail' course.id %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-info-circle me-2"></i>Course Info
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Lessons Sidebar -->
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Course Lessons</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="list-group list-group-flush">
+                                {% for lesson in lessons %}
+                                <a href="{% url 'dashboard:ai_lesson_detail' course.id lesson.id %}" 
+                                   class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {% if lesson == current_lesson %}active{% endif %}">
+                                    <div>
+                                        <h6 class="mb-1">Lesson {{ forloop.counter }}</h6>
+                                        <p class="mb-1 small">{{ lesson.title }}</p>
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>{{ lesson.duration_minutes }} min
+                                        </small>
+                                    </div>
+                                    <div>
+                                        {% if lesson in completed_lessons %}
+                                        <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                                        {% elif lesson == current_lesson %}
+                                        <span class="badge bg-primary">Current</span>
+                                        {% endif %}
+                                    </div>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Stats -->
+                    <div class="card mt-4">
+                        <div class="card-body text-center">
+                            <div class="row">
+                                <div class="col-6">
+                                    <h4 class="text-primary">{{ completed_lessons|length }}</h4>
+                                    <small class="text-muted">Completed</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-warning">{{ lessons|length }}</h4>
+                                    <small class="text-muted">Total Lessons</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Lesson Content -->
+                <div class="col-lg-8">
+                    {% if current_lesson %}
+                    <div class="card">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">{{ current_lesson.title }}</h5>
+                            <div>
+                                {% if current_lesson in completed_lessons %}
+                                <span class="badge bg-light text-dark">Completed</span>
+                                {% else %}
+                                <a href="{% url 'dashboard:mark_lesson_complete' course.id current_lesson.id %}" 
+                                   class="btn btn-light btn-sm">
+                                    <i class="fas fa-check me-1"></i>Mark Complete
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="lesson-content">
+                                {{ current_lesson.content|linebreaks }}
+                            </div>
+                            
+                            <div class="mt-4 p-3 bg-light rounded">
+                                <h6><i class="fas fa-clock me-2"></i>Estimated Time</h6>
+                                <p class="mb-0">{{ current_lesson.duration_minutes }} minutes</p>
+                            </div>
+
+                            <div class="mt-4 d-flex justify-content-between">
+                                {% if prev_lesson %}
+                                <a href="{% url 'dashboard:ai_lesson_detail' course.id prev_lesson.id %}" 
+                                   class="btn btn-outline-primary">
+                                    <i class="fas fa-arrow-left me-2"></i>Previous Lesson
+                                </a>
+                                {% else %}
+                                <span></span>
+                                {% endif %}
+                                
+                                {% if next_lesson %}
+                                <a href="{% url 'dashboard:ai_lesson_detail' course.id next_lesson.id %}" 
+                                   class="btn btn-accent">
+                                    Next Lesson <i class="fas fa-arrow-right me-2"></i>
+                                </a>
+                                {% else %}
+                                <a href="{% url 'dashboard:ai_course_progress' course.id %}" 
+                                   class="btn btn-success">
+                                    Complete Course <i class="fas fa-trophy me-2"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="card text-center">
+                        <div class="card-body py-5">
+                            <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                            <h4>Ready to Start Learning?</h4>
+                            <p class="text-muted">Select a lesson from the sidebar to begin your learning journey.</p>
+                            {% if lessons.first %}
+                            <a href="{% url 'dashboard:ai_lesson_detail' course.id lessons.first.id %}" 
+                               class="btn btn-accent">
+                                Start First Lesson <i class="fas fa-play me-2"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .lesson-content {
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+    
+    .lesson-content h1, .lesson-content h2, .lesson-content h3 {
+        color: #667eea;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .lesson-content ul, .lesson-content ol {
+        padding-left: 2rem;
+    }
+    
+    .lesson-content li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .list-group-item.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+    }
+</style>
+{% endblock %}
