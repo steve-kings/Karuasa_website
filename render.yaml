@@ -2,7 +2,7 @@ services:
   - type: web
     name: karuasa
     runtime: python
-    buildCommand: "./build.sh"
+    buildCommand: "pip install -r karuasa/requirements.txt && cd karuasa && python manage.py collectstatic --no-input && python manage.py migrate"
     startCommand: "cd karuasa && gunicorn karuasa.wsgi:application"
     envVars:
       - key: PYTHON_VERSION
